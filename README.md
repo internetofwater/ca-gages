@@ -35,17 +35,31 @@ TNC Gage Gap: https://gagegap.codefornature.org/
 
 Metadata...POR when active: https://api.climate.ncsu.edu/locations?id=310212
 
-## SWRCB Map Layers Access\
-Instructions to view the map app: 
+## SWRCB Map Layers Access
+There are multiple versions of the maps  TAC map(s) and public map. Some of 
 
-Go to Portal (https://gispublic.waterboards.ca.gov/portal/home/) and sign in with: 
+TAC Version 1:
+1. Go to Portal (https://gispublic.waterboards.ca.gov/portal/home/) and sign in with: 
 
 Username: contact valerie zimmer
 Password: contact valerie zimmer
 
-Click "Groups" in the top menu bar 
+2. Click "Groups" in the top menu bar 
 
-Click the "SB19_Collab" group 
+3. Click the "SB19_Collab" group 
 
-VZ: I am unsure if you can download the data from here.  Also, there are multiple versions and this in not showing the public map.
+
+TAC Version 2:
+Does this link work?
+https://gispublic.waterboards.ca.gov/portal/apps/webappviewer/index.html?id=e03c3b19f4334bdb9467797b918166f5
+
+Public Map 1:
+Does this link work?
+https://gispublic.waterboards.ca.gov/portal/apps/webappviewer/index.html?id=098201630a2d4da6911f97724e77b947
+
+Data 1:
+Stream Gages layer is now public (no login required):
+https://gispublic.waterboards.ca.gov/portal/home/item.html?id=32dfb85bd2744487affe6e3475190093
+
+
 
