@@ -3,6 +3,7 @@ This is a stub, Email content below:
 
 Workplan will be elaborated in the [Wiki](https://github.com/internetofwater/CA-Gages/wiki)
 
+Organize some stuff
 
 ### Sources of data (live preferred)
 
