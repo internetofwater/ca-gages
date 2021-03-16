@@ -4,12 +4,12 @@ The geoconnex reference data server is a work in progress based on the [pygeoapi
 
 The server configuration can be found in [pygeoapi.config.yml](pygeoapi.config.yml)
 
-Data hosted by the server can be found in [ext-data](ext-data)
+Data hosted by the server can be found in [data](data)
 
 ## Contributing new content
 
 Three pieces of information are required for a new contribution:  
-1. spatial feature geometry and attributes in [ext-data](ext-data)
+1. spatial feature geometry and attributes in [data](data)
 1. a pygeoapi resource configuration in [pygeoapi.config.yml](pygeoapi.config.yml)
 1. PIDs registered with the `geoconnex.us` pid server for the features
 
@@ -38,18 +38,14 @@ It is expected that the attributes and richness of these contexts will expand ov
 
 ### PIDs for features
 
-The features hosed in the https://info.geoconnex.us are intended to provide landing pages for PIDs registered in the `https://geoconnex.us/ref/` namespace, more info on those features can be found [here](https://github.com/internetofwater/geoconnex.us/tree/master/namespaces/ref)
+The features hosed in the Linked Data Server are intended to provide landing pages for PIDs
 
-These reference features are intended to be ["community reference locations"](https://github.com/internetofwater/geoconnex.us/wiki/Community-Reference-Locations) and will be created based on broadly-recognized reference data or by a community group interested in registering a wholistic set of reference identifiers that unify multiple organization's identifiers of a similar type. Please [open a new general issue](https://github.com/internetofwater/geoconnex.us/issues/new?template=general.md&title=%5Bgeneral%5D) to discuss an idea for a new set of reference identifiers.
+These reference features are intended to be used by the Stream Planning Tool and associated SB 19 data products
 
 ## Install
 
 ```
-svn checkout https://github.com/internetofwater/geoconnex.us/trunk/pygeoapi
-cd pygeoapi
-mkdir schemas.opengis.net
-cd schemas.opengis.net
-curl -O http://schemas.opengis.net/SCHEMAS_OPENGIS_NET.zip  && unzip SCHEMAS_OPENGIS_NET.zip
-cd ..
+svn checkout https://github.com/internetofwater/CA-Gages/trunk/Linked Data Server
+cd "Linked Data Server"
 docker-compose up -d
 ```
