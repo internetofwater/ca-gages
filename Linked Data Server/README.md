@@ -1,4 +1,4 @@
-# https://info.geoconnex.us pygeoapi configuration
+# pygeoapi configuration
 
 The geoconnex reference data server is a work in progress based on the [pygeoapi project.](https://pygeoapi.io/)
 
