@@ -31,7 +31,7 @@ server:
     bind:
         host: localhost #change to your hostname if running your own instance
         port: 5000
-    url: http://localhost:5000 #change to host URL  if running your own instance
+    url: https://sb19.linked-data.internetofwater.dev #change to host URL  if running your own instance
     mimetype: application/json; charset=UTF-8
     encoding: utf-8
     language: en-US
@@ -91,7 +91,21 @@ resources:
 #                 "@id": schema:subjectOf
 #                 "@type": "@id"
               weblink: 
-                  "@id": "@id"
+                  "@id": "schema:about"
+                  "@type": "@id"
+              comid:
+                  "@id": "schema:geoWithin"
+                  "@type": "@id"
+              provider: 
+                  "@id": "schema:url"
+              hu08:
+                  "@id": "schema:geoWithin"
+                  "@type": "@id"
+              hu10:
+                  "@id": "schema:geoWithin"
+                  "@type": "@id"
+              hu12:
+                  "@id": "schema:geoWithin"
                   "@type": "@id"
         links:
             - type: application/html
@@ -108,6 +122,7 @@ resources:
                 end: null
         providers:
           - type: feature
-            name: GeoJSON
-            data: /data/ca_gages.geojson
+            name: SQLiteGPKG
+            data: /data/ca_gages.gpkg
             id_field: siteid
+            table: ca_gages
