@@ -31,4 +31,4 @@ pids$creator <- "kyle.onda@duke.edu"
 pids$description <- paste0("California Streamgage Network Assessment Catalog, site named",pids$sitename)
 pids <- select(pids,id,target,creator,description)
 
-st_write(pids,"../data/ca_gages.csv",append=FALSE)
+st_write(pids,"../data/ca_gages_pids.csv",overwrite=FALSE, append=FALSE)
