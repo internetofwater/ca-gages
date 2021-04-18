@@ -1,5 +1,8 @@
 library(sf)
 library(esri2sf)
+library(dplyr)
+
+target_url <- "https://sb19.linked-data.internetofwater.dev/collections/ca_gages/items/"
 
 g <- esri2sf("https://gispublic.waterboards.ca.gov/portalserver/rest/services/Hosted/StreamGages_20210114/FeatureServer/0")
 
@@ -19,3 +22,13 @@ g$weblink[which(g$datasource=="NWIS")] <- paste0("https://geoconnex.us/usgs/moni
 g$uri <- paste0("https://geoconnex.us/ca-gage-assessment/gages/",g$siteid)
 
 st_write(g,"../data/ca_gages.gpkg")
+
+pids <- g %>% select(uri, sitename, siteid) %>% st_drop_geometry()
+
+pids$id <- pids$uri
+pids$target <- paste0(target_url,pids$siteid)
+pids$creator <- "kyle.onda@duke.edu"
+pids$description <- paste0("California Streamgage Network Assessment Catalog, site named",pids$sitename)
+pids <- select(pids,id,target,creator,description)
+
+st_write(pids,"../data/ca_gages.csv",append=FALSE)
