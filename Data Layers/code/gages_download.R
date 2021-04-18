@@ -16,6 +16,6 @@ g$provider[which(g$datasource=="CDEC")] <- "https://cdec.water.ca.gov"
 
 g$weblink[which(g$datasource=="NWIS")] <- paste0("https://geoconnex.us/usgs/monitoring-location/",g$siteid[which(g$datasource=="NWIS")])
 
-g$id <- paste0("https://sb19.linked-data.internetofwater.dev/collections/ca_gages/items/",g$siteid)
+g$uri <- paste0("https://geoconnex.us/ca-gage-assessment/gages/",g$siteid)
 
 st_write(g,"../data/ca_gages.gpkg")

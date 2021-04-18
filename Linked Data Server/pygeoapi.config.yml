@@ -52,8 +52,8 @@ logging:
 
 metadata:
     identification:
-        title: geoconnex reference features
-        description: Provides reference features for geoconnex.us.
+        title: California Stream Gage Assessment
+        description: Provides reference features for Stream Gage assessment and Planning Tools
         keywords:
             - geospatial
             - data
@@ -82,6 +82,7 @@ resources:
         type: collection
         title: Gages
         description: Streamgage catalog for CA SB19
+        geojsonld: False
         keywords:
             - Streamgages
         context:
@@ -125,4 +126,5 @@ resources:
             name: SQLiteGPKG
             data: /data/ca_gages.gpkg
             id_field: siteid
+            uri_field: uri
             table: ca_gages
