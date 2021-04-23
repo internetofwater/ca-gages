@@ -18,6 +18,7 @@ g$provider[which(g$datasource=="NWIS")] <- "https://waterdata.usgs.gov"
 g$provider[which(g$datasource=="CDEC")] <- "https://cdec.water.ca.gov"
 
 g$weblink[which(g$datasource=="NWIS")] <- paste0("https://geoconnex.us/usgs/monitoring-location/",g$siteid[which(g$datasource=="NWIS")])
+g$weblink <- gsub("cgi-progs", "dynamicapp",g$weblink)
 
 g$uri <- paste0("https://geoconnex.us/ca-gage-assessment/gages/",g$siteid)
 
@@ -27,14 +28,16 @@ g$comid_medres <- as.numeric(g$comid_medres)
 g <- dplyr::left_join(g, dplyr::select(vaa, comid, frommeas), by = c("comid_medres"="comid"))
 
 cd <- sf::read_sf("https://info.geoconnex.us/collections/gages/items?limit=10000000")
-cd <- select(cd,provider_id:nhdpv2_COMID)
+cd <- dplyr::select(cd,provider_id:nhdpv2_COMID)
 cd <- st_drop_geometry(cd)
 
 g2 <- left_join(g,cd,by=c("siteid"="provider_id"))
 g2$frommeas[which(g2$rchcd_medres==g2$nhdpv2_REACHCODE & g2$comid_medres == g2$nhdpv2_COMID)] <- g2$nhdpv2_REACH_measure[which(g2$rchcd_medres==g2$nhdpv2_REACHCODE & g2$comid_medres == g2$nhdpv2_COMID)] 
+g2$reach_measure <- g2$frommeas
+g2 <- dplyr::select(g2, siteid:uri, reach_measure)
 
-st_write(g,"../data/ca_gages.gpkg")
-st_write(g,"../../Linked Data Server/data/ca_gages.gpkg",overwrite=TRUE, append=FALSE)
+st_write(g2,"../data/gages/ca_gages.gpkg",overwrite=TRUE, append=FALSE)
+st_write(g2,"../../Linked Data Server/data/ca_gages.gpkg",overwrite=TRUE, append=FALSE)
 
 pids <- g %>% select(uri, sitename, siteid) %>% st_drop_geometry()
 

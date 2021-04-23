@@ -2,3 +2,15 @@
 .Rhistory
 .RData
 .Ruserdata
+Data Layers/data/Ecosystem/.DS_Store
+Data Layers/data/Ecosystem/ACE_aquatic_biodiversity.zip
+Data Layers/data/Ecosystem/SB19_Ecosystem_Layers.gdb/a00000001.freelist
+*.gdbindexes
+*.gdbtable
+*.gdbtablx
+*.atx
+*.freelist
+*.horizon
+*.spx
+Data Layers/data/Ecosystem/SB19_Ecosystem_Layers.gdb/gdb
+Data Layers/data/Ecosystem/SB19_Ecosystem_Layers.gdb/timestamps
