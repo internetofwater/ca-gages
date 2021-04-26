@@ -35,16 +35,17 @@ g2 <- left_join(g,cd,by=c("siteid"="provider_id"))
 g2$frommeas[which(g2$rchcd_medres==g2$nhdpv2_REACHCODE & g2$comid_medres == g2$nhdpv2_COMID)] <- g2$nhdpv2_REACH_measure[which(g2$rchcd_medres==g2$nhdpv2_REACHCODE & g2$comid_medres == g2$nhdpv2_COMID)] 
 g2$reach_measure <- g2$frommeas
 g2 <- dplyr::select(g2, siteid:uri, reach_measure)
+g2$site_id <- g2$siteid
 
 st_write(g2,"../data/gages/ca_gages.gpkg",overwrite=TRUE, append=FALSE)
 st_write(g2,"../../Linked Data Server/data/ca_gages.gpkg",overwrite=TRUE, append=FALSE)
 
-pids <- g %>% select(uri, sitename, siteid) %>% st_drop_geometry()
+pids <- g %>% dplyr::select(uri, sitename, siteid) %>% st_drop_geometry()
 
 pids$id <- pids$uri
 pids$target <- paste0(target_url,pids$siteid)
 pids$creator <- "kyle.onda@duke.edu"
 pids$description <- paste0("California Streamgage Network Assessment Catalog, site named",pids$sitename)
-pids <- select(pids,id,target,creator,description)
+pids <- dplyr::select(pids,id,target,creator,description)
 
-write_csv(pids,"../../Linked Data Server/data/ca_gages_pids.csv",overwrite=FALSE, append=FALSE)
+write.csv(pids,"../../Linked Data Server/data/ca_gages_pids.csv",overwrite=FALSE, append=FALSE)
