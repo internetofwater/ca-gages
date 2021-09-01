@@ -1,0 +1,189 @@
+---
+title: "Accessing Watershed Data from Geoconnex"
+author: "Lauren Patterson"
+date: "8/17/2021"
+output: 
+  html_document:
+    theme: sandstone
+    highlight: zenburn
+    code_folding: show
+    toc: true
+    number_sections: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+---
+
+# Introduction
+
+This document describes how to access data from api's for California Stream Gage visualizations.The markdown files are part of an Rproject file. The Rproject file sets the working directory automatically to be in the same folder. In the folder containing the project ("ca_streamgages") is a folder called "data". This is where geojsons will be saved.
+
+The following libraries are required:
+
+```{r setup, message = FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#Load Libaries ------------------------------------
+## First specify the packages of interest
+packages = c("nhdplusTools", #used to access nhdplus data
+             "sf", "rgdal",  "rmapshaper","geojsonio", #spatial data packages
+             "jsonlite", "purrr", "httr", # api packages
+             "tidyverse", "lubridate" #basic data manipulation
+             )
+
+## Now load or install&load all
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+
+
+```
+
+
+# Access watersheds that intersect California
+
+Geoconnex can be used to access HUC 6, 8, and 10 watersheds that intersect California. The FIPS code for California is "06". The first step is to download the state's geojson file using the FIPS code. We then use the state boundary to create a bounding box when we go to download watersheds that may intersect state boundaries.
+
+To learn more about Geoconnex, visit: https://info.geoconnex.us/. To see a demo of how to use Geoconnex in R, visit: https://geoconnex.internetofwater.dev/demo/
+
+## HUC6 Boundaries
+
+```{r state, warning=FALSE}
+# READ IN HUC6, HUC8, and HUC12 layers using Geoconnex
+#Grab state
+ca_feature <- sf::read_sf("https://info.geoconnex.us/collections/states/items?f=json&properties=STATEFP&STATEFP=06")
+mapview::mapview(ca_feature);
+
+#download the Huc 6 files that intersect the state's bounding box
+hu06_url <- paste0("https://info.geoconnex.us/collections/hu06/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=400")
+hu06 <- sf::read_sf(hu06_url)
+mapview::mapview(ca_feature, layer.name="California", col.regions="black", alpha.regions=0.2, lwd=4) + mapview::mapview(hu06, layer.name="HUC6")
+
+#The bounding box includes some areas that are not in the state boundary. Therefore, we join the state with the HUC6 to only include those intersecting the state
+ca.huc6 <- st_join(ca_feature, hu06) 
+ca.huc6 <- hu06 %>% filter(uri %in% ca.huc6$uri.y)
+mapview::mapview(ca_feature, layer.name="California", col.regions="black", alpha.regions=0.2, lwd=4) + mapview::mapview(ca.huc6, layer.name="HUC6")
+#save HUC6 --- commented out because already saved
+#geojson_write(ca.huc6, file="data/ca_huc6.geojson")
+rm(hu06_url, hu06)
+
+```
+
+
+## HUC8 Boundaries
+
+```{r huc8}
+hu08_url <- paste0("https://info.geoconnex.us/collections/hu08/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=600")
+hu08 <- sf::read_sf(hu08_url)
+#mapview::mapview(ca_feature, layer.name="California", col.regions="black", alpha.regions=0.2, lwd=4) + mapview::mapview(hu08, layer.name="HUC8")
+
+#which intersect the the HUC6 boundaries that intersected the state. Easiest to use those contained within the hUC6 identifier
+ca.huc8 <- hu08 %>% filter(substr(id,1,6) %in% ca.huc6$id)
+mapview::mapview(ca_feature, layer.name="California", col.regions="black", alpha.regions=0.2, lwd=4) + mapview::mapview(ca.huc8, layer.name="HUC8")
+#save HUC8 --- commented out because already saved
+#geojson_write(ca.huc8, file="data/ca_huc8.geojson")
+rm(hu08_url, hu08)
+#####--------------------------------------------------
+```
+
+
+## HUC10 Boundaries
+
+```{r huc10}
+#HUC10
+hu10_url <- paste0("https://info.geoconnex.us/collections/hu10/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=3000")
+hu10 <- sf::read_sf(hu10_url)
+#mapview::mapview(ca_feature, layer.name="California", col.regions="black", alpha.regions=0.2, lwd=4) + mapview::mapview(hu10, layer.name="HUC10")
+
+#which intersect the state
+ca.huc10 <- hu10 %>% filter(substr(id,1,8) %in% ca.huc8$id)
+mapview::mapview(ca_feature, layer.name="California", col.regions="black", alpha.regions=0.2, lwd=4) + mapview::mapview(ca.huc10, layer.name="HUC10")
+#save HUC10 --- commented out because already saved
+#geojson_write(ca.huc10, file="data/ca_huc10.geojson")
+rm(hu10_url, hu10)
+```
+
+
+## HUC12 Boundaries
+
+HUC12 boundaries are not in Geoconnex and must be obtained from the NHDPLUS. We used the nhdplusTools package to download HUC12 boundaries. You can learn more about this package from: 
+https://rdrr.io/cran/nhdplusTools/man/get_huc12.html.
+It takes a long time to download the HUC12 file and the file is very large. We can simplify the file using the `ms_simplify` command from the `rmapshaper` library. Here we reduced the number of points used to draw the polygon to 50% (so if 100 points used to draw the polygon, only 50% are used now). We save out a full version for analysis and a simplified version for rendering in visualizations
+
+Below we provide the code without running the script as these files are large and take considerable time to run.
+
+```
+#{r huc12, warning=FALSE}
+#####--------------------------------------------------
+#grab huc 12s within this area of interest... takes a long time to do 
+ca.huc12 <- get_huc12(AOI = ca.huc8); 
+mapview::mapview(ca.huc12)
+ca.huc12 <- ca.huc12 %>% filter(substr(huc12,1,8) %in% ca.huc8$id)
+#save HUC12
+#geojson_write(ca.huc12, file="data/ca_huc12_full.geojson")
+
+#file is huge - simplify to 50%... can see where overlap when zoom really far in... make a mapbox tile instead
+ca.huc12.simple <- ca.huc12 %>% ms_simplify(keep = 0.50, keep_shapes=TRUE)
+mapview::mapview(ca.huc12.simple)
+#save huc 12 --- commented out because already saved
+#geojson_write(ca.huc12.simple, file="data/ca_huc12.geojson")
+```
+
+
+# Access waterbodies
+
+Major lakes and rivers were pulled from the California data portal (https://data.cnra.ca.gov/dataset/national-hydrography-dataset-nhd), which was derived from the NHDPLUS. We attempted to download waterbodies using the NHDPlus tool but there were invalid geometries present that were causing the script to break. For this script to work you must create a blank file in your data folder called "temp". Again - we show the code here but did not run it do to the markdown file size.
+
+```
+#{r waterbodies}
+#pull major lakes and reservoirs from CA portal
+download.file("https://data.cnra.ca.gov/dataset/511528b2-f7d3-4d86-8902-cc9befeeeed5/resource/ec84510b-2cd3-41c1-9f3e-849209582a72/download/nhd_majorlakesandreservoirs.zip", 
+            destfile="data/temp/nhd_majorlakesandreservoirs.zip")
+# Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.
+  unzip("data/temp/nhd_majorlakesandreservoirs.zip", files=NULL, exdir="data/temp")
+  
+  # Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.
+water_bodies <- readOGR("data//temp//MajorLakesAndReservoirs", "MajorLakesAndReservoirs")
+water_bodies <- spTransform(water_bodies, CRS("+init=epsg:4326")) %>% st_as_sf()
+mapview::mapview(ca_feature, layer.name="California", col.regions="black", alpha.regions=0.2, lwd=4) + mapview::mapview(water_bodies, col.regions = "blue", layer.name="Lakes")
+
+#save file --- commented out because already saved
+#geojson_write(water_bodies, file="data/water_bodies.geojson")
+
+#delete temp files
+  fold = ("data\\temp")
+  # get all files in the directories, recursively
+  f <- list.files(fold, include.dirs = F, full.names = T, recursive = T)
+  # remove the files
+  file.remove(f)
+
+```
+
+
+# Stream gage data
+
+Here we read the stream gage data provided by CA in geoconnex. This file was slightly different from the file provided in dropbox. In another rmarkdown we will clean the gage file and show how metadata can be pulled from the shapefile and the data sources for display in a visualization
+
+```{r gages}
+#pull in linked nldi
+g <- sf::read_sf("https://sb19.linked-data.internetofwater.dev/collections/ca_gages/items?limit=5000")
+#get site id
+g$site_no <- gsub("https://sb19.linked-data.internetofwater.dev/collections/ca_gages/items/","",g$id)
+
+#remove potential duplicates with USGS
+#g <- g %>% filter(datasource != "CDEC" | datasource == "CDEC" & operator != "USGS")
+g <- g %>% mutate(flow_status = ifelse(flow_status == "",NA, flow_status))
+table(g$datasource, g$sitestatus, useNA="ifany")
+g <- g %>% select(-fid, -streamgages_objectid, -gnisid_medres, -x_orig, -y_orig, -totdasqkm, -reach_measure, -provider)
+
+g.active = g %>% filter(sitestatus == "Active"); g.inactive = g %>% filter(sitestatus == "Inactive")
+mapview::mapview(g.inactive, col.regions = "gray", alpha.regions = 0.4, cex=3, layer.name="Inactive") + mapview::mapview(g.active, col.regions = "blue", alpha.regions = 0.6, cex=4, layer.name = "Active")
+#save file --- commented out because already saved
+#geojson_write(g, file="data/stream_gages.geojson")
+```

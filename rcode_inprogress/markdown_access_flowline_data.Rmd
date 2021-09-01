@@ -1,0 +1,99 @@
+---
+title: "Accessing Flowline Data"
+author: "Lauren Patterson"
+date: "8/17/2021"
+output: 
+  html_document:
+    theme: sandstone
+    highlight: zenburn
+    code_folding: show
+    toc: true
+    number_sections: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+---
+
+# Introduction
+
+This document describes how to access data from api's for California Stream Gage visualizations.
+
+The following libraries are required:
+
+```{r setup, message = FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#Load Libaries ------------------------------------
+## First specify the packages of interest
+packages = c("nhdplusTools", #used to access nhdplus data
+             "sf", "rgdal",  "rmapshaper","geojsonio", #spatial data packages
+             "jsonlite", "purrr", "httr", # api packages
+             "tidyverse", "lubridate" #basic data manipulation
+             )
+
+## Now load or install&load all
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+
+```
+
+
+# PULL NHDPLUS FLOWLINES DYNAMICALLY BASED ON LOCATION
+
+The NHDPlus Flowlines are too large to load and visualize at once. However, they can be displayed dynamically by users as they zoom into the map or select a watershed using the `nhdplusTools` library and the `get_nhdplus` command. The flowline can be specified by stream order. We provide an example below. However, if you desire flowlines- we have provided scripts to save out major flowlines (stream order 4 or higher) and all flowlines.
+
+```
+#{r flowline}
+ca.huc8 <- read_sf("data/ca_huc8.geojson")
+
+#If a user selects a watershed defined here as "area"
+area = ca.huc8[51,]; mapview::mapview(area)
+#flowlines <- get_nhdplus(area, realization = "flowline", streamorder = 1); #returns that stream order
+flowlines <- get_nhdplus(area, realization = "flowline"); #returns stream order greater than ore equal to this value
+mapview::mapview(area, layer.name="Selected Watershed", col.regions="black", alpha.regions=0.2, lwd=4) + mapview::mapview(flowlines, col.regions = "blue", layer.name="Flowlines")
+
+#Let's create a static flowline for zoomed out. Then once a huc8 12 is called we can zoom in
+flowline.main <- get_nhdplus(ca.huc8, realization = "flowline", streamorder = 4); #returns that stream order and higher (bigger streams)
+mapview::mapview(flowline.main)
+
+#simplify columns in the geojson
+table(flowline.main$ftype, useNA="ifany"); 
+table(flowline.main$wbareatype, useNA = "ifany")
+flowline.main <- flowline.main %>% select(id, comid, gnis_id, gnis_name, lengthkm, reachcode,wbareacomi, ftype, streamleve, streamorde, wbareatype, lakefract)
+mapview::mapview(flowline.main)
+#save flowlines
+#geojson_write(flowline.main, file="data/main_flowlines.geojson")
+
+
+#save out all flowlines even though will only show when zoom in - if in tiles it should load faster
+flowline.all <- get_nhdplus(ca.huc8[1,], realization = "flowline"); 
+for (i in 2:dim(flowline.all)[1]){
+  zt <- get_nhdplus(ca.huc8[i,], realization = "flowline"); 
+  flowline.all <- rbind(flowline.all, zt)
+  
+  print(ca.huc8[i,]$NAME)
+}
+mapview::mapview(flowline.all)
+flowline.all <-  flowline.all %>% select(id, comid, gnis_id, gnis_name, lengthkm, reachcode,wbareacomi, ftype, streamleve, streamorde, wbareatype, lakefract)
+#save flowlines
+#geojson_write(flowline.all, file="data/all_flowlines.geojson")
+```
+
+Here is an example map showing what it looks like.
+
+```{r example, warning=FALSE}
+ca.huc8 <- read_sf("data/ca_huc8.geojson")
+
+area = ca.huc8[51,]; 
+#mapview::mapview(area)
+flowlines <- get_nhdplus(area, realization = "flowline", streamorder = 1); #returns stream order greater than ore equal to this value
+mapview::mapview(area, layer.name="Selected Watershed", col.regions="black", alpha.regions=0.2, lwd=4) + mapview::mapview(flowlines, col.regions = "blue", layer.name="Flowlines")
+
+```
