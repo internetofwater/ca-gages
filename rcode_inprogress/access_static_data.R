@@ -83,14 +83,24 @@ rm(hu10_url, hu10)
 #HUC12 is not on geoconnex and must be obtained elsewhere
 #https://rdrr.io/cran/nhdplusTools/man/get_huc12.html
 #grab huc 12s within this area of interest... none of these libraries are working for some reason
-ca.huc12 <- get_huc12(AOI = ca.huc8); #takes a long time to do 
-mapview::mapview(ca.huc12)
+#ca.huc12 <- get_huc12(AOI = ca.huc8); #takes a long time to do 
+#mapview::mapview(ca.huc12)
 
+#There is something wrong with the borders here. Instead download from: https://www.nhdplus.com/NHDPlus/NHDPlusV2_data.php
+ca.huc12.ca <- sf::st_read("C:\\Users\\lap19\\Downloads\\CA_WBD", layer="WBD_Subwatershed") %>% st_as_sf() %>% st_transform(4326)
+ca.huc12.pn <- sf::st_read("C:\\Users\\lap19\\Downloads\\PN_WBD", layer="WBD_Subwatershed") %>% st_as_sf() %>% st_transform(4326)
+ca.huc12.co <- sf::st_read("C:\\Users\\lap19\\Downloads\\CO_WBD", layer="WBD_Subwatershed") %>% st_as_sf() %>% st_transform(4326)
+ca.huc12.gb <- sf::st_read("C:\\Users\\lap19\\Downloads\\GB_WBD", layer="WBD_Subwatershed") %>% st_as_sf() %>% st_transform(4326)
+
+#stitch together
+ca.huc12 <- rbind(ca.huc12.ca, ca.huc12.co, ca.huc12.gb, ca.huc12.pn)
+#filter to those in ca.huc10
+ca.huc12 <- ca.huc12 %>% filter(HUC_10 %in% ca.huc10$id) %>% select(HUC_12, HU_12_NAME, geometry) %>% rename(huc12 = HUC_12, name = HU_12_NAME)
 #save HUC12
 geojson_write(ca.huc12, file="data/ca_huc12_full.geojson")
 
-#file is huge - simplify to 50%... can see where overlap when zoom really far in... make a mapbox tile instead
-ca.huc12.simple <- ca.huc12 %>% ms_simplify(keep = 0.8, keep_shapes=TRUE)
+#file is huge - simplify to 50%... cn see where overlap when zoom really far in... make a mapbox tile instead
+ca.huc12.simple <- ca.huc12 %>% ms_simplify(keep = 0.45, keep_shapes=TRUE)
 mapview::mapview(ca.huc12.simple)
 geojson_write(ca.huc12.simple, file="data/ca_huc12.geojson")
 

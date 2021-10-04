@@ -196,7 +196,7 @@ mapview::mapview(firo_huc10)
 head(firo_huc10) %>% as.data.frame()
 
 firo_huc12 <- sf::st_read(fgdb_flood, layer = "FIRO_HUC12"); #The huc 10 and huc12 does not match gage locations
-mapview::mapview(firo_huc10)
+mapview::mapview(firo_huc12)
 head(firo_huc12) %>% as.data.frame()
 
 #lets add FIRO to huc10 and huc 12
@@ -303,7 +303,9 @@ leaflet() %>%
   addLegend("topright", 
             colors=c("#3680cd", "#36bdcd", "#cd8536", "#ea3119", "white"), labels = c("Secure & Monitor", "Restore & Monitor", "Secure & Mitigate", "Restore & Mitigate", "unknown"),
             title="Conservation Strategy", opacity=1)
-rm(bpring, bp10, bp.strat)
+ca.huc12 <- ca.huc12 %>% select(-colcat)
+
+rm(bprint, bp10, bp.strat)
 
 
 #------------------------------------------------------------------------------------------------------------------------------------
