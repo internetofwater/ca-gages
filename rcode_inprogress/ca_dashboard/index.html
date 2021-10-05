@@ -1,0 +1,249 @@
+<!doctype html>
+<!-- (c) Copyright protected by Duke University -->
+<html class="no-js" lang="en-US" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>California Stream Gages</title>
+    <meta name="description" content="North Carolina water supply status">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="favicon.png">
+
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="apple-touch-icon" href="icon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lato&family=Quicksand:wght@400;600&display=swap" rel=  "stylesheet">
+     
+    <script  src="https://code.jquery.com/jquery-3.5.0.min.js"  integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
+    crossorigin="anonymous"></script>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css" rel="stylesheet" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+        type="text/css"/>
+
+    <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+    
+    <script src="https://d3js.org/d3.v5.min.js"></script>           
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js" defer></script>
+    <link rel="stylesheet" href="css/main_content.css">
+
+    <style type="text/css">
+
+    </style>
+</head>
+
+<body>
+<div class = "row header">
+    <div class="col-sm-9">    
+        <h1 style="padding-left: 1em;">California Stream Gap Analysis</h1>    
+        <hr style="background-color: #02145C; height: 5px; margin-top: 1px;">
+    </div>
+    <div class="col-sm-3">
+        <a href = "https://internetofwater.org/"> <img src="img/iow_logo.png" style="width: 200px; height: 78px; padding-top: 10px; display: inline-block;"> </a> 
+    </div>
+</div>
+
+<!-- EXPLANATION TAB #################################################################################################
+
+####################################################################################################################-->
+<div class = "row header" style="margin-left: 20px;">
+  <p style="font-size: 16px;">This dashboard provides results from the gage gap analysis...
+    </p>
+</div>
+
+
+<!--#######################################################################################################
+                                    TAB SET UP
+    ######################################################################################################-->
+<div class="container">
+  <div class="col-sm-6" style="padding:0px">
+      <div class= "map-layers-row">   
+        <h3 class="chartTitles">Turn Map Layers On and Off</h3> 
+        <div class="row" style="text-align: center; display: inline;"> 
+            <button class = "btn" value = "menuHUC12" id = "menuHUC12" style= "background-color: #3f97a8; color: white;">HUC12</button>
+            <button class="btn" value= "menuCounty" id= "menuCounty">County</button>
+            <button class="btn" value="menuBasins" id="menuBasins">River Basin</button>
+            <button class="btn" value="menuWatershed" id="menuWatershed">Sub-Basin</button>
+            <button class="btn" value= "menuRivers" id= "menuRivers">Rivers</button>
+            <button class="btn" value= "menuLakes" id= "menuLakes">Water Bodies</button>
+            <button class="btn" value= "menuStreamGages" id= "menuStreamGages">Stream Gages</button>
+            <button class="btn" value= "menuReservoirs" id= "menuReservoirs">FIRO</button>
+            <button class="btn" value= "menuConservation" id= "menuConservation">Conservation</button>
+            <button class="btn" value= "menuBiodiversity" id= "menuBiodiversity">Biodiversity</button>
+            
+        </div><!--end top row-->
+     
+    </div><!-- end map layers row-->
+
+    <!--#######################################################################################################
+                                    MAP DIV
+    ######################################################################################################-->
+     <div class="map-layer-row" id = "map-column" style="z-index: 1px;" style="border: thin solid rgb(26,131,130);">
+           <div id="map" style="height: 700px; z-index: 10;"> <!--border: thin solid black;"--> 
+           <div class="infoMap" id="map_hover_box"><p><strong>Hover over gages</strong></p></div>
+           <div class="legend" id="stream-legend" style="display: none;"></div>    
+           <div class="legend" id="drought-legend" style="display: none;"></div>    
+         </div> <!--end map Div-->
+      </div><!--end map row div-->
+  </div> <!--co-sm-5 end Map section-->
+
+     
+
+
+<!--#######################################################################################################
+                                      FILTER CONTENT / RESULTS CONTENT
+  ######################################################################################################-->
+<div class = "col-sm-6">
+    <div class="row row-margin" style="margin-left: 20px;">
+      <h4>Select what stream gages are shown</h4>
+      <ul>
+        <li>checkbox of operator</li>
+        <li>radio button active/inactive/all</li>
+        <li>checkbox of what is measured: stage, flow, water quality or temperature</li>
+        <li>checkbox of purpose: flood, ecosystem, groundwater, public safety, or water supply</li>
+        <li>checkbox of stream order size (headwaters, stream, rivers)</li>
+      </ul>
+      <br><br>
+      <h4>Maybe we can show some basic metadata about gages based on selection above</h4>
+      <br><br>
+      <h4>Select what huc12 are shown and legend</h4>
+      <ul>Dropdown menu... changes legend
+        <li>Conservation Status</li>
+        <li>Gage Status: (overall, headwaters, streams, rivers)</li>
+        <li>Biodiversity Status (overall, headwaters, streams, rivers)</li>
+        <li>Biodiversity Status for native species</li>
+        <li>Biodiversity Status for rare species</li>
+        <li>Biodiversity Status for ...</li>
+      </ul>
+      <br><br>
+      <h4>Maybe we can show some basic metadata about hucs based on selection above</h4>
+
+    </div>
+  
+<div class="row" id="main-one" style="padding: 0 10px;">
+   </div><!--End Div row main-one-->
+</div><!--end div col-sm-7-->
+
+</div><!--end main row-->
+
+<script>
+  //###########################################################################
+  //                        SET UP GLOBAL VARIABLES
+  //##############################################################################################
+ var zoomThreshold = 4
+
+
+  /* SET UP THE MAP */
+  mapboxgl.accessToken = 'pk.eyJ1IjoiaW50ZXJuZXRvZndhdGVyIiwiYSI6ImNrdHZuZXRrazJjMnMycHAzdW91bnAyNjgifQ.KeB-tlVDJgW7H_NGdCghNg';
+  var map = new mapboxgl.Map({
+    container: 'map', //specify container ID
+    style: 'mapbox://styles/mapbox/light-v10', //streets-v11', //specify map style
+    center: [-119.4, 37.2], //specify the start position; long, lat
+    zoom: 5
+  });
+  map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+
+  //###########################################################################
+  //                            INITIAL MAP LOAD
+  //##############################################################################################
+      //LOAD MAPS----------------------------------------------------------------------------
+      //have to add sources on load
+      map.on('load', function () {
+        //Add sources here - layers with buttons
+        map.addSource('boundary-layers', {
+          type: 'vector',
+          url: 'mapbox://internetofwater.60by4eh2'
+        });
+
+        // Add vector tile source from Mapbox GL JS
+        map.addSource('huc12-layer', {
+          type: 'vector',
+          url: 'mapbox://internetofwater.d71se1mk'
+        });
+
+
+        // Add layers from vector source
+        map.addLayer({
+          'id': 'huc12',
+          'type': 'fill',
+          'source': 'huc12-layer',
+          'source-layer': 'huc12',
+          'minzoom': zoomThreshold,
+          'paint': {
+            'fill-color': 'rgba(0,0,0,0)',
+            'fill-outline-color': 'black',
+            'fill-opacity': 1,
+          } //end paint
+        }); // end huc12 map layer
+
+        map.addSource('gap-layer', {
+          type: 'vector',
+          url: 'mapbox://internetofwater.07nyozq7'
+        });
+
+        // Add gage lines layers from vector source
+        map.addLayer({
+          'id': 'gap_flowlines',
+          'type': 'line',
+          'source': 'gap-layer',
+          'source-layer': 'gap_flowlines',
+          'minzoom': zoomThreshold,
+          'paint': {
+             'line-color': [
+               'match',
+               ['get', 'GGIIStatus'],
+               'Poorly Gaged', 'darkred',
+               'Well Gaged', 'navy',
+               'Almost Well Gaged', 'blue',
+               '#ccc'
+             ],
+            'line-width': {
+              property: 'StrmOrder', // this will be your density property form you geojson
+              stops: [
+                [3, 1],
+                [6, 2],
+                [12, 3]
+            ]
+            } //end line width
+          } //end paint
+        }); // end huc12 map layer
+
+        // Add layers from vector source
+           map.addLayer({
+          'id': 'lakes',
+          'type': 'fill',
+          'source': 'boundary-layers',
+          'source-layer': 'lakes',
+          'paint': {
+            'fill-color': 'blue',
+            'fill-outline-color': 'blue',
+            'fill-opacity': 0.8,
+          } //end paint
+        }); // end lakes map layer
+
+
+
+      });//end map.on load function
+
+
+
+      
+
+</script>
+</body>
+    
+</html>
+
+
+
