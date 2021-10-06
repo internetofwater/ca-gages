@@ -110,25 +110,39 @@
         <input type="checkbox" class="check_row" name="gage_status" value="Inactive"> Inactive Gages &emsp;
         <input type="checkbox" class="check_row" name="gage_status" value="All"> All Gages
       </section>
+      <br>
 
       <p style="font-size: 18px;">Show gages owned by:</p>
-      <section style="padding-left: 10px;">
-        <input type="checkbox" class="check_row" name="owner_type" checked="checked" value="All"> All Owners &emsp; &emsp; &emsp; &emsp; &emsp;
-        <input type="checkbox" class="check_row" name="owner_type" value="California"> California Agencies &emsp;
-        <input type="checkbox" class="check_row" name="owner_type" value="City or County"> Cities or Counties <br>
-        <input type="checkbox" class="check_row" name="owner_type" value="Conservation Districts"> Conservation Districts &emsp;
-        <input type="checkbox" class="check_row" name="owner_type" value="Irrigation Districts"> Irrigation Districts &emsp;
-        <input type="checkbox" class="check_row" name="owner_type" value="Energy Utilities"> Energy Utilities <br>
-        <input type="checkbox" class="check_row" name="owner_type" value="Water Utilities"> Water Utilities &emsp; &emsp; &emsp; &emsp;
-        <input type="checkbox" class="check_row" name="owner_type" value="USGS"> Federal - USGS &emsp; &emsp;
-        <input type="checkbox" class="check_row" name="owner_type" value="Federal (non-USGS)"> Federal - not USGS <br>
-      </section>
+      <form name="selectOwner">
+          <select style="width: 280px;" name="setOwner" id="setOwner" onchange="setOwnerThis(this);">
+          <option selected="selected" value="All"> All Owners</option>
+          <option value="California"> California Agencies</option>
+          <option value="City or County"> Cities or Counties </option>
+          <option value="Conservation Districts"> Conservation Districts </option>
+          <option value="Energy Utilities"> Energy Utilities </option>
+          <option value="USGS"> Federal - USGS </option>
+          <option value="Federal (non-USGS)"> Federal - Non-USGS </option>
+          <option value="Irrigation Districts"> Irrigation Districts </option>
+          <option value="Water Utilities"> Water Utilities </option>
+          <option value="Other"> Other / Unknown </option>
+        </select>
+      </form>
+      <br>
 
+      <p style="font-size: 18px;">Show gages measuring (must be measuring each of the checked boxes to display):</p>
+      <section style="padding-left: 10px;">
+        <input type="checkbox" class="check_row" name="setGageMeasure" checked="checked" value="All"> All Types &emsp;
+        <input type="checkbox" class="check_row" name="setGageMeasure" value="stage_yn"> Stage &emsp;
+        <input type="checkbox" class="check_row" name="setGageMeasure" value="flow_yn"> Flow &emsp;
+        <input type="checkbox" class="check_row" name="setGageMeasure" value="watqual_yn"> Water Quality &emsp;
+        <input type="checkbox" class="check_row" name="setGageMeasure" value="temp_yn"> Temperature &emsp;
+      </section>
+      <br>
 
 
       <script type = "application/javascript">
       // the selector will match all input controls of type :checkbox and attach a click event handler 
-      var test;
+      var test; var allMeasure;
         $("input:checkbox").on('click', function() {
           // in the handler, 'this' refers to the box clicked on
           var $box = $(this);
@@ -145,20 +159,29 @@
               $box.prop("checked", false);
             }
 
-
-            //call onclick function
+            //call onclick function for gage_status
             if(box_name === "gage_status"){
               test = $box.prop("checked", true)
               gageActive = test[0].value;
-              drawGages(gageActive);
+              drawGages(gageActive, owner, gageMeasure);
               return gageActive;
             }
           }//end if a checkbox that only allows one choice
+
+          
+          //call onclick function for gage measuring
+           gageMeasure = [];
+            $("input:checkbox[name='" + box_name + "']:checked").each(function(i,v){
+                gageMeasure.push($(v).val());
+            });
+            console.log(gageMeasure);
+            drawGages(gageActive, owner, gageMeasure);
+            return gageMeasure;
+
        });
       </script>
 
       <ul>
-        <li>checkbox of what is measured (ANDs): stage, flow, water quality or temperature</li>
         <li>checkbox of purpose (ANDs): flood, ecosystem, groundwater, public safety, or water supply</li>
         <li>checkbox of stream order size (headwaters, stream, rivers) (ORS)</li>
       </ul>
@@ -194,6 +217,7 @@
 
  var gageActive = "Active";
  var owner = "All";
+ var gageMeasure = "All";
 
  // Create a popup, but don't add it to the map yet.
  var popup = new mapboxgl.Popup({
