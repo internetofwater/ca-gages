@@ -39,7 +39,7 @@
     <link rel="stylesheet" href="css/main_content.css">
 
     <style type="text/css">
-
+    
     </style>
 </head>
 
@@ -72,16 +72,13 @@
         <h3 class="chartTitles">Turn Map Layers On and Off</h3> 
         <div class="row" style="text-align: center; display: inline;"> 
             <button class = "btn" value = "menuHUC12" id = "menuHUC12" style= "background-color: #3f97a8; color: white;">HUC12</button>
-            <button class="btn" value= "menuCounty" id= "menuCounty">County</button>
             <button class="btn" value="menuBasins" id="menuBasins">River Basin</button>
             <button class="btn" value="menuWatershed" id="menuWatershed">Sub-Basin</button>
             <button class="btn" value= "menuRivers" id= "menuRivers">Rivers</button>
             <button class="btn" value= "menuLakes" id= "menuLakes">Water Bodies</button>
-            <button class="btn" value= "menuStreamGages" id= "menuStreamGages">Stream Gages</button>
-            <button class="btn" value= "menuReservoirs" id= "menuReservoirs">FIRO</button>
-            <button class="btn" value= "menuConservation" id= "menuConservation">Conservation</button>
-            <button class="btn" value= "menuBiodiversity" id= "menuBiodiversity">Biodiversity</button>
-            
+            <button class="btn" value= "menuStreamGages" id= "menuStreamGages" style= "background-color: #3f97a8; color: white;">Stream Gages</button>
+            <button class="btn" value= "menuCounty" id= "menuCounty">County</button>
+            <button class="btn" value= "menuUrban" id= "menuUrban">Urban Areas</button>
         </div><!--end top row-->
      
     </div><!-- end map layers row-->
@@ -91,9 +88,9 @@
     ######################################################################################################-->
      <div class="map-layer-row" id = "map-column" style="z-index: 1px;" style="border: thin solid rgb(26,131,130);">
            <div id="map" style="height: 700px; z-index: 10;"> <!--border: thin solid black;"--> 
-           <div class="infoMap" id="map_hover_box"><p><strong>Hover over gages</strong></p></div>
+           <div class="infoMap" id="map_hover_box"><p><strong>Hover over huc12</strong></p></div>
            <div class="legend" id="stream-legend" style="display: none;"></div>    
-           <div class="legend" id="drought-legend" style="display: none;"></div>    
+           <div class="legend" id="huc12-legend" style="display: none;"></div>    
          </div> <!--end map Div-->
       </div><!--end map row div-->
   </div> <!--co-sm-5 end Map section-->
@@ -105,14 +102,65 @@
                                       FILTER CONTENT / RESULTS CONTENT
   ######################################################################################################-->
 <div class = "col-sm-6">
-    <div class="row row-margin" style="margin-left: 20px;">
-      <h4>Select what stream gages are shown</h4>
+   <div class="row row-margin" style="margin-left: 8px;">
+      <h3 style="color:rgb(26,131,130)">Select what stream gages are shown</h3>
+      <p style="font-size: 18px;">Show gages with a status of:</p>
+      <section style="padding-left: 10px;">
+        <input type="checkbox" class="check_row" name="gage_status" checked="checked" value="Active"> Active Gages &emsp;
+        <input type="checkbox" class="check_row" name="gage_status" value="Inactive"> Inactive Gages &emsp;
+        <input type="checkbox" class="check_row" name="gage_status" value="All"> All Gages
+      </section>
+
+      <p style="font-size: 18px;">Show gages owned by:</p>
+      <section style="padding-left: 10px;">
+        <input type="checkbox" class="check_row" name="owner_type" checked="checked" value="All"> All Owners &emsp; &emsp; &emsp; &emsp; &emsp;
+        <input type="checkbox" class="check_row" name="owner_type" value="California"> California Agencies &emsp;
+        <input type="checkbox" class="check_row" name="owner_type" value="City or County"> Cities or Counties <br>
+        <input type="checkbox" class="check_row" name="owner_type" value="Conservation Districts"> Conservation Districts &emsp;
+        <input type="checkbox" class="check_row" name="owner_type" value="Irrigation Districts"> Irrigation Districts &emsp;
+        <input type="checkbox" class="check_row" name="owner_type" value="Energy Utilities"> Energy Utilities <br>
+        <input type="checkbox" class="check_row" name="owner_type" value="Water Utilities"> Water Utilities &emsp; &emsp; &emsp; &emsp;
+        <input type="checkbox" class="check_row" name="owner_type" value="USGS"> Federal - USGS &emsp; &emsp;
+        <input type="checkbox" class="check_row" name="owner_type" value="Federal (non-USGS)"> Federal - not USGS <br>
+      </section>
+
+
+
+      <script type = "application/javascript">
+      // the selector will match all input controls of type :checkbox and attach a click event handler 
+      var test;
+        $("input:checkbox").on('click', function() {
+          // in the handler, 'this' refers to the box clicked on
+          var $box = $(this);
+          var box_name = $box.attr("name")
+
+          if(box_name === "gage_status"){
+            if ($box.is(":checked")) {
+              // the name of the box is retrieved using the .attr() method
+              var group = "input:checkbox[name='" + $box.attr("name") + "']";
+            // the checked state of the group/box on the other hand will change and the current value is retrieved using .prop() method
+                $(group).prop("checked", false);
+                $box.prop("checked", true);
+            } else {
+              $box.prop("checked", false);
+            }
+
+
+            //call onclick function
+            if(box_name === "gage_status"){
+              test = $box.prop("checked", true)
+              gageActive = test[0].value;
+              drawGages(gageActive);
+              return gageActive;
+            }
+          }//end if a checkbox that only allows one choice
+       });
+      </script>
+
       <ul>
-        <li>checkbox of operator</li>
-        <li>radio button active/inactive/all</li>
-        <li>checkbox of what is measured: stage, flow, water quality or temperature</li>
-        <li>checkbox of purpose: flood, ecosystem, groundwater, public safety, or water supply</li>
-        <li>checkbox of stream order size (headwaters, stream, rivers)</li>
+        <li>checkbox of what is measured (ANDs): stage, flow, water quality or temperature</li>
+        <li>checkbox of purpose (ANDs): flood, ecosystem, groundwater, public safety, or water supply</li>
+        <li>checkbox of stream order size (headwaters, stream, rivers) (ORS)</li>
       </ul>
       <br><br>
       <h4>Maybe we can show some basic metadata about gages based on selection above</h4>
@@ -137,11 +185,22 @@
 
 </div><!--end main row-->
 
-<script>
+<script type="application/javascript">
   //###########################################################################
   //                        SET UP GLOBAL VARIABLES
   //##############################################################################################
  var zoomThreshold = 4
+ var streamLegend = document.getElementById('stream-legend');
+
+ var gageActive = "Active";
+ var owner = "All";
+
+ // Create a popup, but don't add it to the map yet.
+ var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false
+  });
+ 
 
 
   /* SET UP THE MAP */
@@ -154,93 +213,12 @@
   });
   map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 
-  //###########################################################################
-  //                            INITIAL MAP LOAD
-  //##############################################################################################
-      //LOAD MAPS----------------------------------------------------------------------------
-      //have to add sources on load
-      map.on('load', function () {
-        //Add sources here - layers with buttons
-        map.addSource('boundary-layers', {
-          type: 'vector',
-          url: 'mapbox://internetofwater.60by4eh2'
-        });
-
-        // Add vector tile source from Mapbox GL JS
-        map.addSource('huc12-layer', {
-          type: 'vector',
-          url: 'mapbox://internetofwater.d71se1mk'
-        });
-
-
-        // Add layers from vector source
-        map.addLayer({
-          'id': 'huc12',
-          'type': 'fill',
-          'source': 'huc12-layer',
-          'source-layer': 'huc12',
-          'minzoom': zoomThreshold,
-          'paint': {
-            'fill-color': 'rgba(0,0,0,0)',
-            'fill-outline-color': 'black',
-            'fill-opacity': 1,
-          } //end paint
-        }); // end huc12 map layer
-
-        map.addSource('gap-layer', {
-          type: 'vector',
-          url: 'mapbox://internetofwater.07nyozq7'
-        });
-
-        // Add gage lines layers from vector source
-        map.addLayer({
-          'id': 'gap_flowlines',
-          'type': 'line',
-          'source': 'gap-layer',
-          'source-layer': 'gap_flowlines',
-          'minzoom': zoomThreshold,
-          'paint': {
-             'line-color': [
-               'match',
-               ['get', 'GGIIStatus'],
-               'Poorly Gaged', 'darkred',
-               'Well Gaged', 'navy',
-               'Almost Well Gaged', 'blue',
-               '#ccc'
-             ],
-            'line-width': {
-              property: 'StrmOrder', // this will be your density property form you geojson
-              stops: [
-                [3, 1],
-                [6, 2],
-                [12, 3]
-            ]
-            } //end line width
-          } //end paint
-        }); // end huc12 map layer
-
-        // Add layers from vector source
-           map.addLayer({
-          'id': 'lakes',
-          'type': 'fill',
-          'source': 'boundary-layers',
-          'source-layer': 'lakes',
-          'paint': {
-            'fill-color': 'blue',
-            'fill-outline-color': 'blue',
-            'fill-opacity': 0.8,
-          } //end paint
-        }); // end lakes map layer
-
-
-
-      });//end map.on load function
-
-
-
-      
-
+  
 </script>
+
+<script type="application/javascript" src="scripts/drawMap.js"></script>
+<script type="application/javascript" src="scripts/map_hover_click.js"></script>
+<script type="application/javascript" src="scripts/gage_layers.js"></script>
 </body>
     
 </html>
