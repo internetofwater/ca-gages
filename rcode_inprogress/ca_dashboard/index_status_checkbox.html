@@ -104,28 +104,17 @@
 <div class = "col-sm-6">
    <div class="row row-margin" style="margin-left: 8px;">
       <h3 style="color:rgb(26,131,130)">Select what stream gages are shown</h3>
-      <br>
-      <form name="gage_status"> <span style="font-weight:bold; font-size: 18px;"> Show gages with a status of:</span> &emsp;
-        <select style="width: 200px;" name="setStatus" id="setStatus" onchange="setStatusThis(this);">
-        <option selected="selected" value="All"> All Gages</option>
-        <option value="Active"> Active Gages</option>
-        <option value="Inactive"> Inactive Gages </option>
-      </select>
-    </form>
+      <p style="font-size: 18px;">Show gages with a status of:</p>
+      <section style="padding-left: 10px;">
+        <input type="checkbox" class="check_row" name="gage_status" checked="checked" value="Active"> Active Gages &emsp;
+        <input type="checkbox" class="check_row" name="gage_status" value="Inactive"> Inactive Gages &emsp;
+        <input type="checkbox" class="check_row" name="gage_status" value="All"> All Gages
+      </section>
       <br>
 
-      <form name="gage_status"> <span style="font-weight:bold; font-size: 18px;"> Show gages by stream size:</span> &emsp;
-        <select style="width: 200px;" name="setGageOrder" id="setGageOrder" onchange="setGageOrderThis(this);">
-          <option selected="selected" value="All"> All Stream Sizes</option>
-          <option value="headwaterGage"> Headwaters (1 to 3)</option>
-          <option value="streamGage"> Streams (4 to 6) </option>
-          <option value="riverGage"> Rivers (7 to 9) </option>
-        </select>
-      </form>
-      <br>
-
-      <form name="selectOwner"><span style="font-weight:bold; font-size: 18px;">Show gages owned by: </span> &emsp;
-          <select style="width: 220px;" name="setOwner" id="setOwner" onchange="setOwnerThis(this);">
+      <p style="font-size: 18px;">Show gages owned by:</p>
+      <form name="selectOwner">
+          <select style="width: 280px;" name="setOwner" id="setOwner" onchange="setOwnerThis(this);">
           <option selected="selected" value="All"> All Owners</option>
           <option value="California"> California Agencies</option>
           <option value="City or County"> Cities or Counties </option>
@@ -140,7 +129,7 @@
       </form>
       <br>
 
-      <p><span style="font-weight:bold; font-size: 18px;">Show gages measuring</span> (must measure each of the checked boxes to display):</p>
+      <p style="font-size: 18px;">Show gages measuring (must be measuring each of the checked boxes to display):</p>
       <section style="padding-left: 10px;">
         <input type="checkbox" class="check_row" name="setGageMeasure" checked="checked" value="All"> All Types &emsp;
         <input type="checkbox" class="check_row" name="setGageMeasure" value="stage_yn"> Stage &emsp;
@@ -148,43 +137,71 @@
         <input type="checkbox" class="check_row" name="setGageMeasure" value="watqual_yn"> Water Quality &emsp;
         <input type="checkbox" class="check_row" name="setGageMeasure" value="temp_yn"> Temperature &emsp;
       </section>
-      
-      <p><span style="font-weight:bold; font-size: 18px;">Show gages used to manage</span> (must measure each of the checked boxes to display):</p>
-      <section style="padding-left: 10px;">
-        <input type="checkbox" class="check_row" name="setGageManage" checked="checked" value="All"> All Uses &emsp; &emsp;
-        <input type="checkbox" class="check_row" name="setGageManage" value="floodmgmt"> Flood &emsp;
-        <input type="checkbox" class="check_row" name="setGageManage" value="firo"> Flood Informed Reservoir Operations <br>
-        <input type="checkbox" class="check_row" name="setGageManage" value="ecosysmgmt"> Ecosystem &emsp;
-        <input type="checkbox" class="check_row" name="setGageManage" value="grdwtrmgmt"> Groundwater <br>
-        <input type="checkbox" class="check_row" name="setGageManage" value="pubsafety"> Public Safety &nbsp;
-        <input type="checkbox" class="check_row" name="setGageManage" value="wtrsupply"> Water Supply &emsp;
-      </section>
       <br>
 
-      <hr style="margin: 5px 0; width: 3px; background-color: rgb(26,131,130)">
-      <section style="margin: 0; padding: 25px; font-size: 20px; color: rgb(26,131,130); background-color: rgba(224,224,224,0.6); font-weight: bold;">
-        <h3 id="gageCount">There are 2,681 gages selected.</h3>
-      </section>
-      <hr style="margin: 5px 0; width: 3px; background-color: rgb(26,131,130)">
 
-      <h3 style="color:rgb(26,131,130)">Select a legend for HUC 12 watersheds:</h3>
-      <form name="gage_status"> <span style="font-weight:bold; font-size: 18px;"> Pick HUC Legend:</span> &emsp;
-        <select style="width: 250px;" name="setHUCLegend" id="setHUCLegend" onchange="setHUCLegendThis(this);">
-          <option selected="selected" value="none"> None</option>
-          <option value="conservationStatus"> Conservation Status</option>
-          <option value="firoStatus"> Forecast Informed Reservoirs Operating </option>
-          <option value="condIndex"> Conditional? Index </option>
-          <option value="threatIndex"> Threat Index </option>
-          <option value="bioRankAll"> Biodiversity Rank </option>
-          <option value="gageStatusHead"> Percent of Poorly Gaged Headwaters </option>
-          <option value="gageStatusStream"> Percent of Poorly Gaged Streams </option>
-          <option value="gageStatusRiver"> Percent of Poorly Gaged Rivers </option>
-        </select>
-      </form>
+      <script type = "application/javascript">
+      // the selector will match all input controls of type :checkbox and attach a click event handler 
+      var test; var allMeasure;
+        $("input:checkbox").on('click', function() {
+          // in the handler, 'this' refers to the box clicked on
+          var $box = $(this);
+          var box_name = $box.attr("name")
+
+          if(box_name === "gage_status"){
+            if ($box.is(":checked")) {
+              // the name of the box is retrieved using the .attr() method
+              var group = "input:checkbox[name='" + $box.attr("name") + "']";
+            // the checked state of the group/box on the other hand will change and the current value is retrieved using .prop() method
+                $(group).prop("checked", false);
+                $box.prop("checked", true);
+            } else {
+              $box.prop("checked", false);
+            }
+
+            //call onclick function for gage_status
+            if(box_name === "gage_status"){
+              test = $box.prop("checked", true)
+              gageActive = test[0].value;
+              drawGages(gageActive, owner, gageMeasure);
+              return gageActive;
+            }
+          }//end if a checkbox that only allows one choice
+
+          
+          //call onclick function for gage measuring
+           gageMeasure = [];
+            $("input:checkbox[name='" + box_name + "']:checked").each(function(i,v){
+                gageMeasure.push($(v).val());
+            });
+            console.log(gageMeasure);
+            drawGages(gageActive, owner, gageMeasure);
+            return gageMeasure;
+
+       });
+      </script>
+
+      <ul>
+        <li>checkbox of purpose (ANDs): flood, ecosystem, groundwater, public safety, or water supply</li>
+        <li>checkbox of stream order size (headwaters, stream, rivers) (ORS)</li>
+      </ul>
+      <br><br>
+      <h4>Maybe we can show some basic metadata about gages based on selection above</h4>
+      <br><br>
+      <h4>Select what huc12 are shown and legend</h4>
+      <ul>Dropdown menu... changes legend
+        <li>Conservation Status</li>
+        <li>Gage Status: (overall, headwaters, streams, rivers)</li>
+        <li>Biodiversity Status (overall, headwaters, streams, rivers)</li>
+        <li>Biodiversity Status for native species</li>
+        <li>Biodiversity Status for rare species</li>
+        <li>Biodiversity Status for ...</li>
+      </ul>
+      <br><br>
+      <h4>Maybe we can show some basic metadata about hucs based on selection above</h4>
 
     </div>
-
-       
+  
 <div class="row" id="main-one" style="padding: 0 10px;">
    </div><!--End Div row main-one-->
 </div><!--end div col-sm-7-->
@@ -197,14 +214,10 @@
   //##############################################################################################
  var zoomThreshold = 4
  var streamLegend = document.getElementById('stream-legend');
- var hucLegend = document.getElementById('huc12-legend');
 
- var gageActive = "All";
+ var gageActive = "Active";
  var owner = "All";
- var gageMeasure = ["All"];
- var gageManage = ["All"];
- var gageOrder = "All";
- var hucLegendDrawn = "none";
+ var gageMeasure = "All";
 
  // Create a popup, but don't add it to the map yet.
  var popup = new mapboxgl.Popup({
@@ -230,7 +243,6 @@
 <script type="application/javascript" src="scripts/drawMap.js"></script>
 <script type="application/javascript" src="scripts/map_hover_click.js"></script>
 <script type="application/javascript" src="scripts/gage_layers.js"></script>
-<script type="application/javascript" src="scripts/hucLegend.js"></script>
 </body>
     
 </html>

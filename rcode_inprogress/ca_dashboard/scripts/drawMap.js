@@ -96,23 +96,23 @@ function drawMap(){
         'fill-opacity': 0.5,
       }
     });
-  //  map.addLayer({
-  //   id: "urban_name",
-  //   type: "symbol",
-  //   source: 'boundary-layers',
-  //   'source-layer': 'urban_pts',
-  //   layout: {
-  //       "visibility": 'none',
-  //       "text-field": "{NAME10}",
-  //       'symbol-placement': "point"
-  //   },
-  //   paint: {
-  //       "text-color": "black",
-  //       "text-halo-color": "#fff",
-  //       "text-halo-width": 4,
-  //       "text-halo-blur": 0,
-  //   }
-  //   });
+   map.addLayer({
+    id: "urban_name",
+    type: "symbol",
+    source: 'boundary-layers',
+    'source-layer': 'urban_pts',
+    layout: {
+        "visibility": 'none',
+        "text-field": "{NAME10}",
+        'symbol-placement': "point"
+    },
+    paint: {
+        "text-color": "black",
+        "text-halo-color": "#fff",
+        "text-halo-width": 4,
+        "text-halo-blur": 0,
+    }
+    });
 
     //RIVER BASINS: HUC6 + LABELS----------------------------------------------
     map.addLayer({
@@ -237,7 +237,7 @@ function drawMap(){
       'type': 'circle',
       'source-layer':'gages',
       'source': 'gage-layer',
-      'filter': ["in", "sitestatus", gageActive],
+      //'filter': ["in", "sitestatus", gageActive],
       'paint': {
         'circle-radius': 3,
         'circle-color': 'black',

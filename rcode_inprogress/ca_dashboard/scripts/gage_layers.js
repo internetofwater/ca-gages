@@ -5,24 +5,74 @@
 // ##########################################################################################
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//  This function filters by size of system
+//  This function filters by selection
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+function setStatusThis(target) {
+  //Change variable
+  gageActive = document.getElementById('setStatus').value;
+  //console.log(gageActive);
+
+  drawGages(gageActive, owner, gageMeasure, gageManage, gageOrder)
+  return gageActive
+} // end setStatusThis function ---------------------------------------------------------
+
 function setOwnerThis(target) {
   //Change variable
   owner = document.getElementById('setOwner').value;
-  console.log(owner);
+  //console.log(owner);
 
-  drawGages(gageActive, owner, gageMeasure)
+  drawGages(gageActive, owner, gageMeasure, gageManage, gageOrder)
   return owner
+} // end setOwnerThis function -------------------------------------------------------------
+
+function setGageOrderThis(target) {
+  //Change variable
+  gageOrder = document.getElementById('setGageOrder').value;
+  //console.log(gageOrder)
+  drawGages(gageActive, owner, gageMeasure, gageManage, gageOrder)
+  return gageOrder
 } // end setOwnerThis function
+
+
+
+// the selector will match all input controls of type :checkbox and attach a click event handler 
+var test; var allMeasure;
+  $("input:checkbox").on('click', function() {
+    // in the handler, 'this' refers to the box clicked on
+    var $box = $(this);
+    var box_name = $box.attr("name")
+    
+    //call onclick function for gage measuring
+    if(box_name === "setGageMeasure"){
+     gageMeasure = [];
+      $("input:checkbox[name='" + box_name + "']:checked").each(function(i,v){
+          gageMeasure.push($(v).val());
+      });
+      //console.log(gageMeasure);
+      drawGages(gageActive, owner, gageMeasure, gageManage, gageOrder);
+      return gageMeasure;
+    }
+
+    //call onclick function for gage measuring
+    if(box_name === "setGageManage"){
+     gageManage = [];
+      $("input:checkbox[name='" + box_name + "']:checked").each(function(i,v){
+          gageManage.push($(v).val());
+      });
+      //console.log(gageManage);
+      drawGages(gageActive, owner, gageMeasure, gageManage, gageOrder);
+      return gageManage;
+    }
+ });
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //  This function draws the gage layer based on selections
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Loops through all the functions to change maplayer accordingly
-function drawGages(gageActive, owner, gageMeasure){
-    var mapFilter = ["all"]
+var mapFilter;
+function drawGages(gageActive, owner, gageMeasure, gageManage, gageOrder){
+    mapFilter = ["all"]
 
     //filter gages based on activity
     if(gageActive !== "All"){
@@ -37,23 +87,43 @@ function drawGages(gageActive, owner, gageMeasure){
 
     //filter based on purpose
     if(gageMeasure[0] !== "All" & gageMeasure.length > 0){
-      //This is for OR
-      // if(gageMeasure.length === 1){ mapFilter.push(["in", gageMeasure[0], "Y"]) }
-      // if(gageMeasure.length === 2){ mapFilter.push(["in", gageMeasure[0], gageMeasure[1], "Y"]) }
-      // if(gageMeasure.length === 3){ mapFilter.push(["in", gageMeasure[0], gageMeasure[1], gageMeasure[2], "Y"]) }
-      // if(gageMeasure.length === 4){ mapFilter.push(["in", gageMeasure[0], gageMeasure[1], gageMeasure[2], gageMeasure[3], "Y"]) }
-
+      console.log("gage measure is running with length of: " + gageMeasure.length)
       //This makes it "AND"
       for (i=0; i<gageMeasure.length; i++){
         mapFilter.push(["in", gageMeasure[i], "Y"])
       }
+    }//end gageMeasure
 
+    //filter based on management
+    if(gageManage[0] !== "All" & gageManage.length > 0){
+      for (i=0; i<gageManage.length; i++){
+        mapFilter.push(["in", gageManage[i], "Y"])
+      }
     }
+    
+  //filter based on stream order size
+  if(gageOrder !== "All"){
+    if(gageOrder === "headwaterGage"){mapFilter.push(["<=", "strmorder", '3']) }
+    if(gageOrder === "streamGage"){
+      mapFilter.push([">", "strmorder", '3']) 
+      mapFilter.push(["<", "strmorder", '7']) 
+    }
+    if(gageOrder === "riverGage"){mapFilter.push([">=", "strmorder", '7']) }
+  }
 
-    console.log(mapFilter);
+  console.log(mapFilter);
   //draw full Filter
   map.setFilter('streamgauge-layer', mapFilter)
-}
+
+ 
+  var features = map.querySourceFeatures('gage-layer', {
+    sourceLayer: 'gages',
+    filter: mapFilter
+    });
+    //console.log(features)
+  
+  document.getElementById('gageCount').innerHTML = "There are " + features.length + " gages selected.";
+}//end draw Gages function
 
 
 // var breweryFilter=[
