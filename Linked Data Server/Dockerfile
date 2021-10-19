@@ -1,4 +1,4 @@
-FROM geopython/pygeoapi:latest
+FROM webbben/pygeoapi-gzip:latest
 #pygeoapi last updated 2021-10-15T10:53
 
 #Add data 
