@@ -96,7 +96,7 @@ resources:
                   "@id": "schema:about"
                   "@type": "@id"
               comid:
-                  "@id": "schema:geoWithin"
+                  "@id": "http://www.opengeospatial.org/standards/waterml2/hy_features/flowpath"
                   "@type": "@id"
               provider: 
                   "@id": "schema:url"
