@@ -1,18 +1,11 @@
 #
-# This is a Shiny web application. You can run the application by clicking the 'Run App' button above. Visit http://shiny.rstudio.com/
+# This is a Shiny web application that traces upstream and downstream of a clicked location. The app finds gages.
 #
-
-#function for each html tag
-#tags$h1() is like <h1>; tabs$a() is like <a>
-#the elements are lists
-
-#to include an image in an app - make a www folder in the same folder with your app and put images in there
-#fluidPage is equivalent with the div in html
-#You can pass html directly into shiny using the HTML() function
 
 
 library(shiny); library(leaflet); library(leaflet.extras)
 library(tidyverse); library(sf);  library(httr); library(htmltools)
+library(nhdplusTools);
 
 #load in stream gages and other layers
 swd_shiny = "..//www_data//";
@@ -414,9 +407,7 @@ server <- function(input, output) {
       text2 <- paste0("<strong><span style='color: red'>You must select a direction first</span></strong>")
     }
     
-    
-    
-    #}#end if a direction is selected
+     #}#end if a direction is selected
   })#end Observe Event
   
   
@@ -424,24 +415,6 @@ server <- function(input, output) {
 } #end server function
 
 
-
 # Run the application 
 shinyApp(ui = ui, server = server)
-
-
-# Define server logic that follows 3 rules
-#(1) save outputs to display as output$ that matches the name in the output of the ui
-#(2) render functions place an r object into the shiny web  e.g. renderPlot({#place all the code I need in here to create a plot})
-#can call functions in here
-#primary functions are: 
-#(1) render to make objects to display: renderPlot(), renderImage(), renderDataTable(), renderPrint()
-#(2) modularize code with reactivity... small chunks are better
-#leaflet has its own reactive function
-#(3) use input values with input$ to make reactive to users
-#Code outside of server runs once
-
-
-
-#shinyapps.io is one way to host apps for testing
-#could create a shiny server designed to host web apps and open source... also a pro version
 

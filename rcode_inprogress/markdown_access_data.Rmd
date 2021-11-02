@@ -50,18 +50,18 @@ package.check <- lapply(
 
 Geoconnex can be used to access HUC 6, 8, and 10 watersheds that intersect California. The FIPS code for California is "06". The first step is to download the state's geojson file using the FIPS code. We then use the state boundary to create a bounding box when we go to download watersheds that may intersect state boundaries.
 
-To learn more about Geoconnex, visit: https://info.geoconnex.us/. To see a demo of how to use Geoconnex in R, visit: https://geoconnex.internetofwater.dev/demo/
+To learn more about Geoconnex, visit: https://reference.geoconnex.us/. To see a demo of how to use Geoconnex in R, visit: https://geoconnex.internetofwater.dev/demo/
 
 ## HUC6 Boundaries
 
 ```{r state, warning=FALSE}
 # READ IN HUC6, HUC8, and HUC12 layers using Geoconnex
 #Grab state
-ca_feature <- sf::read_sf("https://info.geoconnex.us/collections/states/items?f=json&properties=STATEFP&STATEFP=06")
+ca_feature <- sf::read_sf("https://reference.geoconnex.us/collections/states/items?f=json&properties=STATEFP&STATEFP=06")
 mapview::mapview(ca_feature);
 
 #download the Huc 6 files that intersect the state's bounding box
-hu06_url <- paste0("https://info.geoconnex.us/collections/hu06/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=400")
+hu06_url <- paste0("https://reference.geoconnex.us/collections/hu06/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=400")
 hu06 <- sf::read_sf(hu06_url)
 mapview::mapview(ca_feature, layer.name="California", col.regions="black", alpha.regions=0.2, lwd=4) + mapview::mapview(hu06, layer.name="HUC6")
 
@@ -79,7 +79,7 @@ rm(hu06_url, hu06)
 ## HUC8 Boundaries
 
 ```{r huc8}
-hu08_url <- paste0("https://info.geoconnex.us/collections/hu08/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=600")
+hu08_url <- paste0("https://reference.geoconnex.us/collections/hu08/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=600")
 hu08 <- sf::read_sf(hu08_url)
 #mapview::mapview(ca_feature, layer.name="California", col.regions="black", alpha.regions=0.2, lwd=4) + mapview::mapview(hu08, layer.name="HUC8")
 
@@ -97,7 +97,7 @@ rm(hu08_url, hu08)
 
 ```{r huc10}
 #HUC10
-hu10_url <- paste0("https://info.geoconnex.us/collections/hu10/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=3000")
+hu10_url <- paste0("https://reference.geoconnex.us/collections/hu10/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=3000")
 hu10 <- sf::read_sf(hu10_url)
 #mapview::mapview(ca_feature, layer.name="California", col.regions="black", alpha.regions=0.2, lwd=4) + mapview::mapview(hu10, layer.name="HUC10")
 
