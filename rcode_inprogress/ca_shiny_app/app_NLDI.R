@@ -105,6 +105,9 @@ ui <- fluidPage(
         hr(),
         ), #end filter_div
         
+        tags$div(id = "hover_info",
+                 htmlOutput("hover_link")
+        ), #end hover_info div
         
         tags$div(id = "table_div",
           #provide information about what was selected
@@ -171,7 +174,9 @@ server <- function(input, output) {
                        radius = 4,
                        stroke = TRUE, color ="black", weight = 1,
                        fillOpacity= g$colOpacity, fillColor = g$colGage, options = pathOptions(pane = "points"),
-                       label = ~paste0("Site: ", site_id)
+                       #label = ~paste0("Site: ", site_id, " at ", uri)
+                       label = ~paste0(uri),
+                       labelOptions = labelOptions(textsize = "12px")
                        ) %>% 
                        #popup = ~paste0("<div>Site: ", site_id, "<br> Operator: ", operator2, "<br> Stream Type: ", 
                       #                               streamtype, "<br>Stage: ", stage_yn,"</div>")     ) %>%  
@@ -194,6 +199,12 @@ server <- function(input, output) {
       #add search bar
       addSearchOSM() 
   })
+  
+  #observeEvent(input$map_mouseover, {
+  #  hover <- input$map_mouseover;
+  #  output$hover_link <- renderUI({hover$uri})
+  #})
+  
   
   #Get map lat long based on click and run script
   observeEvent(input$map_click, {
@@ -276,7 +287,7 @@ server <- function(input, output) {
     
     #Add origin point and rivers to the map regardless
     proxy %>% addCircleMarkers(data = point, group = "Selected Gages",
-                               radius = 4, stroke = TRUE, color ="black", weight = 1,
+                               radius = 8, stroke = TRUE, color ="black", weight = 2,
                                fillOpacity= 1, fillColor = "red", options = pathOptions(pane = "selected")) %>% 
       addPolylines(data = rivers, group = "Streams",
                    color ="blue", weight = 2, options = pathOptions(pane = "lines"))
