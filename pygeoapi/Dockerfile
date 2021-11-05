@@ -1,5 +1,5 @@
 FROM internetofwater/pygeoapi:stable
-#pygeoapi last updated 2021-11-05T17:34
+#pygeoapi last updated 2021-11-05T15:17
 
 #Add data 
 COPY ./data /data
