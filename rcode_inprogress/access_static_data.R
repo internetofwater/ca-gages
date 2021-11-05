@@ -34,8 +34,8 @@ swd_data = "C:\\Users\\lap19\\Documents\\Internet of Water\\Pilots\\CA\\data\\"
 ###############################################################################################################################3###########
 # READ IN HUC6, HUC8, and HUC12 layers using Geoconnex
 #Grab state
-ca_feature <- sf::read_sf("https://info.geoconnex.us/collections/states/items?f=json&properties=STATEFP&STATEFP=06")
-hu08_url <- paste0("https://info.geoconnex.us/collections/hu08/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=300")
+ca_feature <- sf::read_sf("https://reference.geoconnex.us/collections/states/items?f=json&properties=STATEFP&STATEFP=06")
+hu08_url <- paste0("https://reference.geoconnex.us/collections/hu08/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=300")
 hu08 <- sf::read_sf(hu08_url)
 mapview::mapview(hu08)
 
@@ -50,7 +50,7 @@ rm(hu08_url, hu08)
 
 #####--------------------------------------------------
 #HUC6
-hu06_url <- paste0("https://info.geoconnex.us/collections/hu06/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=300")
+hu06_url <- paste0("https://reference.geoconnex.us/collections/hu06/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=300")
 hu06 <- sf::read_sf(hu06_url)
 mapview::mapview(hu06)
 
@@ -65,7 +65,7 @@ rm(hu06_url, hu06)
 
 #####--------------------------------------------------
 #HUC10
-hu10_url <- paste0("https://info.geoconnex.us/collections/hu10/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=3000")
+hu10_url <- paste0("https://reference.geoconnex.us/collections/hu10/items?bbox=", paste(sf::st_bbox(ca_feature), collapse = ","), "&limit=3000")
 hu10 <- sf::read_sf(hu10_url)
 mapview::mapview(hu10)
 
